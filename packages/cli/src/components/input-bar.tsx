@@ -37,11 +37,31 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     resolveCommand,
     setSelectedIndex,
   } = useUserCommandMenu();
+  const handleCommand = useCallback(
+    (command: Commands | undefined) => {
+      const textarea = textareaRef.current;
+      if (!textarea || !command) return;
 
-  const handleCommandExecute = useCallback((index: number) => {
-    const command = resolveCommand(index);
-    handleCommand(command as Commands | undefined);
-  }, []);
+      textarea.setText("");
+
+      if (command.action) {
+        command.action({
+          exit: () => renderer.destroy(),
+        });
+      } else {
+        textarea.insertText(command.value + " ");
+      }
+    },
+    [renderer],
+  );
+
+  const handleCommandExecute = useCallback(
+    (index: number) => {
+      const command = resolveCommand(index);
+      handleCommand(command as Commands | undefined);
+    },
+    [resolveCommand, handleCommand],
+  );
 
   const handleTextareaContentChange = useCallback(() => {
     const textarea = textareaRef.current;
@@ -64,24 +84,6 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     onSubmit(text);
     textarea.setText("");
   }, [disabled, onSubmit]);
-
-  const handleCommand = useCallback(
-    (command: Commands | undefined) => {
-      const textarea = textareaRef.current;
-      if (!textarea || !command) return;
-
-      textarea.setText("");
-
-      if (command.action) {
-        command.action({
-          exit: () => renderer.destroy(),
-        });
-      } else {
-        textarea.insertText(command.value + " ");
-      }
-    },
-    [renderer],
-  );
 
   useEffect(() => {
     const textarea = textareaRef.current;
