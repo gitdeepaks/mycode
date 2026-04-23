@@ -3,6 +3,7 @@ import type { ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import { getFilteredCommands } from "./filter-commands";
 import type { Commands } from "./types";
+import { useKeyboardLayer } from "../../providers/keyboard-layer";
 
 type UserCommandMenuReturn = {
   showCommandMenu: boolean;
@@ -19,6 +20,7 @@ export function useUserCommandMenu(): UserCommandMenuReturn {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [showCommandMenu, setShowCommandMenu] = useState(false);
   const scrollRef = useRef<ScrollBoxRenderable | null>(null);
+  const { push, pop, isTopLayer, setResponder } = useKeyboardLayer();
 
   const commandQuery =
     showCommandMenu && textValue.startsWith("/") ? textValue.slice(1) : "";
@@ -27,6 +29,11 @@ export function useUserCommandMenu(): UserCommandMenuReturn {
     () => getFilteredCommands(commandQuery),
     [commandQuery],
   );
+
+  const close = () => {
+    setShowCommandMenu(false);
+    pop("command");
+  };
 
   const handleContentChnage = (text: string) => {
     setTextValue(text);
@@ -41,8 +48,12 @@ export function useUserCommandMenu(): UserCommandMenuReturn {
 
     if (prefix !== null && !prefix.includes(" ")) {
       setShowCommandMenu(true);
+      push("command", () => {
+        close();
+        return true;
+      });
     } else {
-      setShowCommandMenu(false);
+      close();
     }
   };
 
@@ -50,7 +61,7 @@ export function useUserCommandMenu(): UserCommandMenuReturn {
   const resolveCommand = (index: number): Commands | undefined => {
     const command = filteredCommands[index];
     if (command) {
-      setShowCommandMenu(false);
+      close();
     }
 
     return command;
@@ -58,10 +69,10 @@ export function useUserCommandMenu(): UserCommandMenuReturn {
 
   // Arrow keys to move the selection
   useKeyboard((key) => {
-    if (!showCommandMenu) return;
+    if (!showCommandMenu || !isTopLayer("command", () => false)) return;
 
     if (key.name === "escape") {
-      setShowCommandMenu(false);
+      close();
     } else if (key.name === "up") {
       key.preventDefault();
       setSelectedIndex((i: number) => {
