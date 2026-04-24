@@ -9,7 +9,7 @@ export const StatusBar = () => {
       <text attributes={TextAttributes.DIM} fg={colors.dimSeparator}>
         &#8250;
       </text>
-      <text>Opus-4-7</text>
+      <text>opus-4-7</text>
     </box>
   );
 };

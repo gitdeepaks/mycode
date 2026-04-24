@@ -1,0 +1,25 @@
+{
+  // --- TypeScript: use workspace SDK ---
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+
+  // --- ESLint: make the extension find the monorepo root ---
+  // Flat config support (eslint.config.mjs). Keep both keys for compatibility
+  // across ESLint extension versions.
+  "eslint.useFlatConfig": true,
+  "eslint.experimental.useFlatConfig": true,
+
+  // Ensure ESLint resolves from the workspace root even when editing packages/*.
+  "eslint.workingDirectories": [
+    { "mode": "auto" }
+  ],
+  "eslint.nodePath": "node_modules",
+
+  // Validate TS/TSX via ESLint.
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}

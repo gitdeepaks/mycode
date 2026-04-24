@@ -17,17 +17,19 @@ import { useTheme } from "../providers/theme";
 
 type Props = {
   onSubmit: (text: string) => void;
+  onChange?: (text: string) => void;
   disabled?: boolean;
 };
 
 export const TEXTAREA_KEY_BINDINGD: KeyBinding[] = [
+  { name: "return", action: "submit" },
   { name: "return", action: "submit" },
   { name: "empty", action: "submit" },
   { name: "return", shift: true, action: "newline" },
   { name: "enter", shift: true, action: "newline" },
 ];
 
-export const InputBar = ({ onSubmit, disabled = false }: Props) => {
+export const InputBar = ({ onSubmit, onChange, disabled = false }: Props) => {
   const textareaRef = useRef<TextareaRenderable>(null);
   const onSubmitRef = useRef<() => void>(() => {});
   const renderer = useRenderer();
@@ -78,15 +80,14 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     if (!textarea) return;
 
     handleContentChnage(textarea.plainText);
-  }, []);
+    onChange?.(textarea.plainText);
+  }, [handleContentChnage, onChange]);
 
   const handleSubmit = useCallback(() => {
     if (disabled) return;
 
     const textarea = textareaRef.current;
     if (!textarea) return;
-
-    textarea.setText("");
 
     const text = textarea.plainText.trim();
     if (text.length === 0) return;
@@ -104,16 +105,25 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     };
   }, []);
 
-  onSubmitRef.current = () => {
-    if (disabled) return;
-    if (showCommandMenu) {
-      const command = resolveCommand(selectedIndex);
-      handleCommand(command ?? undefined);
-      return;
-    }
+  useEffect(() => {
+    onSubmitRef.current = () => {
+      if (disabled) return;
+      if (showCommandMenu) {
+        const command = resolveCommand(selectedIndex);
+        handleCommand(command ?? undefined);
+        return;
+      }
 
-    handleSubmit();
-  };
+      handleSubmit();
+    };
+  }, [
+    disabled,
+    showCommandMenu,
+    resolveCommand,
+    selectedIndex,
+    handleCommand,
+    handleSubmit,
+  ]);
 
   // Register the base layer responder
   useEffect(() => {
