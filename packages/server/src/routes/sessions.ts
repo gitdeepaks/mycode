@@ -2,7 +2,7 @@ import { Hono } from "hono";
 // import { HTTPException } from "hono/http-exception";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { db } from "@mycode/database";
+import { db } from "@mycode/database/client";
 import { Role, Mode, MessageStatus } from "@mycode/database/enums";
 import { findSupportedChatModel } from "@mycode/shared";
 
