@@ -56,7 +56,8 @@ export function ToastProvider({ children }: ToastProviderProps) {
       });
       timeOutHandleRef.current = setTimeout(() => {
         setCurrentToast(null);
-      }, duration).unref();
+      }, duration);
+      timeOutHandleRef.current?.unref?.();
     },
     [clearCurrentTimeout],
   );

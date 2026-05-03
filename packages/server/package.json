@@ -1,0 +1,19 @@
+{
+  "name": "@mycode/server",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "bun run --hot src/index.ts"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.7.6",
+    "@mycode/database": "workspace:*",
+    "@mycode/shared": "workspace:*",
+    "dotenv": "^17.4.2",
+    "hono": "^4.12.16",
+    "zod": "^4.4.1"
+  }
+}
